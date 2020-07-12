@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 from Titanic.two_layer_net import TwoLayerNet
 
+from Titanic.common.multi_layer_net_extend import MultiLayerNetExtend
+from Titanic.common.optimizer import SGD, Adam
+
 # Data processing
 dataset_train = pd.read_csv('../Titanic/titanic_data/train.csv')
 dataset_test = pd.read_csv('../Titanic/titanic_data/test.csv')
@@ -43,7 +46,9 @@ dataset_train.drop(['Sex', 'Embarked', 'Age'], inplace=True, axis=1)
 x_train = dataset_train[0: 600].values
 x_test = dataset_train[600: dataset_train.shape[0]].values
 
-network = TwoLayerNet(input_size=dataset_train.columns.shape[0], output_size=2, hidden_size=200, weight_init_std=0.1)
+# network = TwoLayerNet(input_size=dataset_train.columns.shape[0], output_size=2, hidden_size=200, weight_init_std=0.1)
+network = MultiLayerNetExtend(input_size=dataset_train.columns.shape[0], hidden_size_list=[100, 100, 100, 100, 100], output_size=2,
+                                 weight_init_std=0.1, use_batchnorm=True)
 
 iters_num = 10000
 train_size = x_train.shape[0]

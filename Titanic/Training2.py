@@ -121,4 +121,4 @@ for i in result:
 
 survivedDf = pd.DataFrame(survived, index=pid, columns=['Survived'])
 
-survivedDf.to_csv('../Titanic/result.csv')
+survivedDf.to_csv('../Titanic/result05330731.csv')

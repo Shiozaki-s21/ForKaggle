@@ -23,12 +23,8 @@ test_csv = dataset_test.copy(deep=True)
 all_csv = pd.concat([training_csv, test_csv], sort=False)
 all_csv['Age'] = all_csv['Age'].fillna(all_csv['Age'].median())
 all_csv['Fare'] = all_csv['Fare'].fillna(all_csv['Fare'].median())
-# test = seaborn.catplot(x='Embarked', kind='count', data=all_csv)
-# plt.plot(data=all_csv['Embarked'])
-# plt.show()
 
-# all_csv['Embarked'] = all_csv['Embarked'].fillna('S')
-all_csv = all_csv.drop(['Embarked'], axis=1)
+all_csv['Embarked'] = all_csv['Embarked'].fillna('S')
 
 all_csv.loc[all_csv['Age'] <= 16, 'Age'] = 0
 all_csv.loc[(all_csv['Age'] > 16) & (all_csv['Age'] <= 32), 'Age'] = 1
@@ -72,41 +68,39 @@ all_csv['Pclass'].replace({1: '1', 2: '2', 3:'3'}, inplace=True)
 
 all_csv_1 = all_csv.drop(['Name', 'Ticket'], axis=1)
 
-all_csv_dummies = pd.get_dummies(all_csv_1, drop_first=True)
-all_csv_train = all_csv_dummies[all_csv_dummies['Survived'].notna()]
+for i in range(2**all_csv_1.columns.shape[0]):
+    print(format(i, 'b'))
 
-all_csv_test = all_csv_dummies[all_csv_dummies['Survived'].isna()]
 
-ans = all_csv_train.get({'PassengerId', 'Survived'})
+#     # drop here
+#
+#     all_csv_dummies = pd.get_dummies(all_csv_1, drop_first=True)
+#     all_csv_train = all_csv_dummies[all_csv_dummies['Survived'].notna()]
+#
+#     all_csv_test = all_csv_dummies[all_csv_dummies['Survived'].isna()]
+#
+#     ans = all_csv_train.get({'PassengerId', 'Survived'})
+#
+#     all_csv_train = all_csv_train.drop(['Survived', 'PassengerId'], axis=1)
+#     all_csv_test = all_csv_test.drop(['PassengerId'], axis=1)
+#
+#     x_train = all_csv_train[0: 600].values
+#     t_train = ans[0: 600].values
+#     x_test = all_csv_train[600: 891].values
+#     t_test = ans[600: 891].values
+#
+#     a = []
+#     b = format(i, '04b')
+#     print('b: ' + b)
+#     if b[0] == '1':
+#         a.append('A')
+#     if b[1] == '1':
+#         a.append('B')
+#     if b[2] == '1':
+#         a.append('C')
+#     if b[3] == '1':
+#         a.append('D')
+#     print(a)
 
-all_csv_train = all_csv_train.drop(['Survived', 'PassengerId'], axis=1)
-all_csv_test = all_csv_test.drop(['PassengerId'], axis=1)
-
-x_train = all_csv_train[0: 600].values
-t_train = ans[0: 600].values
-x_test = all_csv_train[600: 891].values
-t_test = ans[600: 891].values
-
-network = MultiLayerNetExtend(input_size=all_csv_train.columns.shape[0], hidden_size_list=[100, 100, 100, 100, 100], output_size=2,
-                                 weight_init_std=0.01, use_batchnorm=True)
-
-train_model = TrainModel(network=network, iter_num=10000, learning_rate=0.001)
-train_model.train(x_train=x_train,  t_train=t_train, x_test=x_test, t_test=t_test)
-
-all_csv_test = all_csv_test.drop(['Survived'], axis=1)
-test_csv = all_csv_test.values
-
-network = train_model.network
-result = network.predict(test_csv)
-# result = network.predict(test_csv)
-survived = []
-pid = dataset_test['PassengerId']
-
-for i in result:
-    survived.append(0) if i[0] > i[1] else survived.append(1)
-
-survivedDf = pd.DataFrame(survived, index=pid, columns=['Survived'])
-survivedDf.to_csv('../Titanic/result05330731.csv')
 
 print('fin')
-
